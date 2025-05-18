@@ -1,0 +1,1129 @@
+{
+	"info": {
+		"_postman_id": "cff74dfc-f1fe-4221-ac96-b2d6ad049fe7",
+		"name": "TathakerLab",
+		"description": "Laravel autogenerate swagger\n\nContact Support:\n Email: hussein4alaa@gmail.com",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10231689",
+		"_collection_link": "https://tech-world.postman.co/workspace/Testing~81307793-aaa6-467d-a234-40dd3015101e/collection/10231689-cff74dfc-f1fe-4221-ac96-b2d6ad049fe7?action=share&source=collection_link&creator=10231689"
+	},
+	"item": [
+		{
+			"name": "logout",
+			"item": [
+				{
+					"name": "unknown",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful Operation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/logout",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Validation Issues",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/logout",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logout"
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "api",
+			"item": [
+				{
+					"name": "login",
+					"item": [
+						{
+							"name": "unknown",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "identifier",
+											"value": "07827576300",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "07827576300",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"login"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Successful Operation",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/login",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"login"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Validation Issues",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/login",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"login"
+											]
+										}
+									},
+									"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+									"code": 422,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "register",
+					"item": [
+						{
+							"name": "unknown",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var template = `\r",
+											"<style type=\"text/css\">\r",
+											"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+											"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+											"    .tftable tr {background-color:#ffffff;}\r",
+											"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+											"    .tftable tr:hover {background-color:#e0ffff;}\r",
+											"</style>\r",
+											"\r",
+											"<table class=\"tftable\" border=\"1\">\r",
+											"    <tr>\r",
+											"        <th>Name</th>\r",
+											"        <th>Email</th>\r",
+											"        <th>Phone</th>\r",
+											"        <th>Updated At</th>\r",
+											"        <th>Created At</th>\r",
+											"        <th>ID</th>\r",
+											"    </tr>\r",
+											"    <tr>\r",
+											"        <td>{{response.user.name}}</td>\r",
+											"        <td>{{response.user.email}}</td>\r",
+											"        <td>{{response.user.phone}}</td>\r",
+											"        <td>{{response.user.updated_at}}</td>\r",
+											"        <td>{{response.user.created_at}}</td>\r",
+											"        <td>{{response.user.id}}</td>\r",
+											"    </tr>\r",
+											"</table>\r",
+											"`;\r",
+											"\r",
+											"function constructVisualizerPayload() {\r",
+											"    return {response: pm.response.json()}\r",
+											"}\r",
+											"\r",
+											"pm.visualizer.set(template, constructVisualizerPayload());\r",
+											"\r",
+											"pm.test(\"Response status code is 201\", function () {\r",
+											"  pm.expect(pm.response.to.have.status(201));\r",
+											"});\r",
+											"\r",
+											"\r",
+											"pm.test(\"Response has the required fields\", function () {\r",
+											"    const responseData = pm.response.json();\r",
+											"    \r",
+											"    pm.expect(responseData).to.be.an('object');\r",
+											"    pm.expect(responseData.token).to.exist;\r",
+											"    pm.expect(responseData.user).to.be.an('object');\r",
+											"    pm.expect(responseData.user.name).to.exist;\r",
+											"    pm.expect(responseData.user.email).to.exist;\r",
+											"    pm.expect(responseData.user.phone).to.exist;\r",
+											"    pm.expect(responseData.user.updated_at).to.exist;\r",
+											"    pm.expect(responseData.user.created_at).to.exist;\r",
+											"    pm.expect(responseData.user.id).to.exist;\r",
+											"});\r",
+											"\r",
+											"\r",
+											"pm.test(\"Phone number is in a valid format\", function () {\r",
+											"  const responseData = pm.response.json();\r",
+											"  \r",
+											"  pm.expect(responseData.user.phone).to.match(/^\\+\\d{1,3}\\d{9,}$/);\r",
+											"});\r",
+											"\r",
+											"\r",
+											"pm.test(\"Response time is less than 300ms\", function () {\r",
+											"  pm.expect(pm.response.responseTime).to.be.below(300);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Asaad H",
+											"type": "text"
+										},
+										{
+											"key": "phone",
+											"value": "07827576302",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "07827576300",
+											"type": "text"
+										},
+										{
+											"key": "password_confirmation",
+											"value": "07827576300",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/register",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"register"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Successful Operation",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/register",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"register"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Validation Issues",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/register",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"register"
+											]
+										}
+									},
+									"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+									"code": 422,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "unknown",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "name",
+													"value": "Asaad H",
+													"type": "text"
+												},
+												{
+													"key": "phone",
+													"value": "07827576302",
+													"type": "text"
+												},
+												{
+													"key": "password",
+													"value": "07827576300",
+													"type": "text"
+												},
+												{
+													"key": "password_confirmation",
+													"value": "07827576300",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/register",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"register"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Mon, 12 May 2025 00:01:27 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "x-powered-by",
+											"value": "PHP/8.2.28"
+										},
+										{
+											"key": "cache-control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "access-control-allow-origin",
+											"value": "*"
+										},
+										{
+											"key": "platform",
+											"value": "hostinger"
+										},
+										{
+											"key": "panel",
+											"value": "hpanel"
+										},
+										{
+											"key": "content-security-policy",
+											"value": "upgrade-insecure-requests"
+										},
+										{
+											"key": "Server",
+											"value": "hcdn"
+										},
+										{
+											"key": "x-hcdn-request-id",
+											"value": "01f604ab7aac08b6c4b8c58b09ac1cf7-nme-edge6"
+										},
+										{
+											"key": "x-hcdn-cache-status",
+											"value": "DYNAMIC"
+										},
+										{
+											"key": "x-hcdn-upstream-rt",
+											"value": "0.908"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"token\": \"4|NTzN1MToCAGAqyF9DBYgn1frUnU7ilx9kBGH0eQV155f4c45\",\n    \"user\": {\n        \"name\": \"Asaad H\",\n        \"email\": null,\n        \"phone\": \"07827576302\",\n        \"updated_at\": \"2025-05-12T00:01:28.000000Z\",\n        \"created_at\": \"2025-05-12T00:01:28.000000Z\",\n        \"id\": 4\n    }\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "events",
+					"item": [
+						{
+							"name": "active",
+							"item": [
+								{
+									"name": "unknown",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/my-tickets",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"my-tickets"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Successful Operation",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/events/active",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"events",
+														"active"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Not Found",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/events/active",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"events",
+														"active"
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "upcoming",
+							"item": [
+								{
+									"name": "unknown",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/events/upcoming",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"events",
+												"upcoming"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Successful Operation",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/events/upcoming",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"events",
+														"upcoming"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Not Found",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/events/upcoming",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"events",
+														"upcoming"
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "{id}",
+							"item": [
+								{
+									"name": "unknown",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/events/:id",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"events",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "105",
+													"description": "(Required) id"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Successful Operation",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/events/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"events",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Not Found",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/events/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"events",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "logout",
+					"item": [
+						{
+							"name": "unknown",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/logout",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"logout"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Successful Operation",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/logout",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"logout"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Validation Issues",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/logout",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"logout"
+											]
+										}
+									},
+									"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+									"code": 422,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "wallet",
+					"item": [
+						{
+							"name": "deposit",
+							"item": [
+								{
+									"name": "unknown",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "multipart/form-data"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "user_id",
+													"value": "2",
+													"description": "(Required) ",
+													"type": "text"
+												},
+												{
+													"key": "amount",
+													"value": "10000000",
+													"description": "(Required) ",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/wallet/deposit",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"wallet",
+												"deposit"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Successful Operation",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "multipart/form-data"
+													}
+												],
+												"body": {
+													"mode": "formdata",
+													"formdata": [
+														{
+															"key": "user_id",
+															"value": "<string>",
+															"description": "(Required) ",
+															"type": "text"
+														},
+														{
+															"key": "amount",
+															"value": "<number>",
+															"description": "(Required) ",
+															"type": "text"
+														}
+													]
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/wallet/deposit",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"wallet",
+														"deposit"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Validation Issues",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "multipart/form-data"
+													}
+												],
+												"body": {
+													"mode": "formdata",
+													"formdata": [
+														{
+															"key": "user_id",
+															"value": "<string>",
+															"description": "(Required) ",
+															"type": "text"
+														},
+														{
+															"key": "amount",
+															"value": "<number>",
+															"description": "(Required) ",
+															"type": "text"
+														}
+													]
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/wallet/deposit",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"wallet",
+														"deposit"
+													]
+												}
+											},
+											"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+											"code": 422,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "order",
+					"item": [
+						{
+							"name": "unknown",
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "multipart/form-data",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"event_id\": 105,\r\n  \"tickets\": [\r\n    {\r\n      \"ticket_category_id\": 5,\r\n      \"holder_name\": \"Ahmed\",\r\n      \"holder_phone\": \"555-111-2222\"\r\n    },\r\n    {\r\n      \"ticket_category_id\": 6,\r\n      \"holder_name\": \"Fatima\",\r\n      \"holder_phone\": \"555-222-3333\"\r\n    },\r\n    {\r\n      \"ticket_category_id\": 5,\r\n      \"holder_name\": \"Ali\",\r\n      \"holder_phone\": \"555-444-5555\"\r\n    }\r\n  ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/order",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"order"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Successful Operation",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "multipart/form-data"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "event_id",
+													"value": "<string>",
+													"description": "(Required) ",
+													"type": "text"
+												},
+												{
+													"key": "tickets[]",
+													"value": "<array>",
+													"description": "(Required) ",
+													"type": "text"
+												},
+												{
+													"key": "tickets[merge_input][ticket_category_id]",
+													"value": "<string>",
+													"description": "(Required) ",
+													"type": "text"
+												},
+												{
+													"key": "tickets[merge_input][holder_name]",
+													"value": "<string>",
+													"description": "(Required) ",
+													"type": "text"
+												},
+												{
+													"key": "tickets[merge_input][holder_phone]",
+													"value": "<string>",
+													"description": "(Required) ",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/order",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"order"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								},
+								{
+									"name": "Validation Issues",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "multipart/form-data"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "event_id",
+													"value": "<string>",
+													"description": "(Required) ",
+													"type": "text"
+												},
+												{
+													"key": "tickets[]",
+													"value": "<array>",
+													"description": "(Required) ",
+													"type": "text"
+												},
+												{
+													"key": "tickets[merge_input][ticket_category_id]",
+													"value": "<string>",
+													"description": "(Required) ",
+													"type": "text"
+												},
+												{
+													"key": "tickets[merge_input][holder_name]",
+													"value": "<string>",
+													"description": "(Required) ",
+													"type": "text"
+												},
+												{
+													"key": "tickets[merge_input][holder_phone]",
+													"value": "<string>",
+													"description": "(Required) ",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/order",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"order"
+											]
+										}
+									},
+									"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+									"code": 422,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://blue-penguin-872241.hostingersite.com/api/my-tickets",
+							"protocol": "https",
+							"host": [
+								"blue-penguin-872241",
+								"hostingersite",
+								"com"
+							],
+							"path": [
+								"api",
+								"my-tickets"
+							]
+						},
+						"description": "### GET /api/my-tickets\n\nThis endpoint retrieves the list of tickets associated with the user.\n\n#### Response\n\nThe response will be a JSON object with the following schema:\n\n``` json\n{\n  \"data\": [\n    {\n      \"id\": \"number\",\n      \"qr_code_svg\": \"string\",\n      \"event_id\": \"number\",\n      \"order_id\": \"number\",\n      \"ticket_number\": \"string\",\n      \"availability_status\": \"string\",\n      \"holder_name\": \"string\",\n      \"holder_phone\": \"string\",\n      \"is_valid\": \"number\",\n      \"created_at\": \"string\",\n      \"updated_at\": \"string\",\n      \"ticket_category\": {\n        \"id\": \"number\",\n        \"name\": \"string\",\n        \"price\": \"string\",\n        \"is_free\": \"number\",\n        \"details\": \"string\",\n        \"sale_start_date\": \"string\",\n        \"sale_end_date\": \"string\",\n        \"quantity_available\": \"number\"\n      }\n    }\n  ],\n  \"links\": {\n    \"first\": \"string\",\n    \"last\": \"string\",\n    \"prev\": \"null\",\n    \"next\": \"null\"\n  },\n  \"meta\": {\n    \"current_page\": \"number\",\n    \"from\": \"number\",\n    \"last_page\": \"number\",\n    \"links\": [\n      {\n        \"url\": \"null\",\n        \"label\": \"string\",\n        \"active\": \"boolean\"\n      }\n    ],\n    \"path\": \"string\",\n    \"per_page\": \"number\",\n    \"to\": \"number\",\n    \"total\": \"number\"\n  }\n}\n\n ```"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "2|GSSVhlJjY3UenTS3Pnpuz1WsKsMovdk0NPxWluth57a3ef43",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://blue-penguin-872241.hostingersite.com"
+		}
+	]
+}
