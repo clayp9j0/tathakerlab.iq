@@ -15,9 +15,11 @@ interface EventsListProps {
     priceMin?: number
     priceMax?: number
   }
+  hasMoreEvents?: boolean
+  organizationId?: number
 }
 
-export default function EventsList({ categoryId, searchQuery, filters }: EventsListProps) {
+export default function EventsList({ categoryId, searchQuery, filters, hasMoreEvents, organizationId }: EventsListProps) {
   const [events, setEvents] = useState<Event[]>([])
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -50,6 +52,10 @@ export default function EventsList({ categoryId, searchQuery, filters }: EventsL
   useEffect(() => {
     if (events.length === 0) return
     let result = [...events]
+    // Filter by organization if provided
+    if (organizationId) {
+      result = result.filter(event => event.organization && event.organization.id === organizationId)
+    }
     // Apply search filter
     if (searchQuery && searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase().trim()
@@ -62,32 +68,34 @@ export default function EventsList({ categoryId, searchQuery, filters }: EventsL
     }
     // Apply date filter
     if (filters?.date) {
-      const today = new Date()
-      const tomorrow = new Date(today)
-      tomorrow.setDate(today.getDate() + 1)
-      const weekend = new Date(today)
-      weekend.setDate(today.getDate() + (6 - today.getDay()))
-      const nextWeek = new Date(today)
-      nextWeek.setDate(today.getDate() + 7)
-      const nextMonth = new Date(today)
-      nextMonth.setMonth(today.getMonth() + 1)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      const weekend = new Date(today);
+      weekend.setDate(today.getDate() + (6 - today.getDay()));
+      const nextWeek = new Date(today);
+      nextWeek.setDate(today.getDate() + 7);
+      const nextMonth = new Date(today);
+      nextMonth.setMonth(today.getMonth() + 1);
       result = result.filter((event) => {
-        const eventDate = new Date(event.date)
+        const eventEndDate = event.end_date ? new Date(event.end_date) : new Date(event.date);
+        eventEndDate.setHours(0, 0, 0, 0);
         switch (filters.date) {
           case "today":
-            return eventDate.toDateString() === today.toDateString()
+            return eventEndDate.getTime() === today.getTime();
           case "tomorrow":
-            return eventDate.toDateString() === tomorrow.toDateString()
+            return eventEndDate.getTime() === tomorrow.getTime();
           case "weekend":
-            return eventDate >= today && eventDate <= weekend
+            return eventEndDate >= today && eventEndDate <= weekend;
           case "week":
-            return eventDate >= today && eventDate <= nextWeek
+            return eventEndDate >= today && eventEndDate <= nextWeek;
           case "month":
-            return eventDate >= today && eventDate <= nextMonth
+            return eventEndDate >= today && eventEndDate <= nextMonth;
           default:
-            return true
+            return true;
         }
-      })
+      });
     }
     // Apply price filters
     if (filters?.priceMin !== undefined || filters?.priceMax !== undefined) {
@@ -105,7 +113,7 @@ export default function EventsList({ categoryId, searchQuery, filters }: EventsL
       })
     }
     setFilteredEvents(result)
-  }, [events, searchQuery, filters])
+  }, [events, searchQuery, filters, organizationId])
 
   if (isLoading) {
     return (
@@ -174,7 +182,11 @@ export default function EventsList({ categoryId, searchQuery, filters }: EventsL
               <div className="space-y-2 mb-4 flex-grow">
                 <div className="flex items-center text-sm text-gray-600">
                   <CalendarDays className="h-4 w-4 mr-2 text-purple-700" />
-                  {event.date ? new Date(event.date).toLocaleDateString() : "TBD"}
+                  {event.end_date
+                    ? new Date(event.end_date).toLocaleDateString('en-GB')
+                    : event.date
+                      ? new Date(event.date).toLocaleDateString('en-GB')
+                      : "TBD"}
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <MapPin className="h-4 w-4 mr-2 text-purple-700" />
@@ -194,6 +206,13 @@ export default function EventsList({ categoryId, searchQuery, filters }: EventsL
           </div>
         </Link>
       ))}
+      {hasMoreEvents && (
+        <div className="mt-8 flex justify-center">
+          <Button variant="outline" className="mx-auto">
+            Load More Events
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

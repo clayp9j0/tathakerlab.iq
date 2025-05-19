@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getCategories, type Category } from "@/lib/api"
+import { getCategories, getActiveEvents, type Category, type Event } from "@/lib/api"
 
 interface Banner {
   id: number;
@@ -39,6 +39,9 @@ export default function EventsPage() {
     priceMin?: number
     priceMax?: number
   }>({})
+  const [events, setEvents] = useState<Event[]>([])
+  const [hasMoreEvents, setHasMoreEvents] = useState(false)
+  const [organizations, setOrganizations] = useState<{ id: number, name: string }[]>([])
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -65,7 +68,28 @@ export default function EventsPage() {
       }
     }
 
+    // Fetch events to extract organizations
+    const fetchEventsAndOrganizations = async () => {
+      try {
+        const events = await getActiveEvents()
+        setEvents(events)
+        // Extract unique organizations
+        const orgMap: Record<number, string> = {}
+        events.forEach((ev: Event) => {
+          if (ev.organization && ev.organization.id && ev.organization.name) {
+            orgMap[ev.organization.id] = ev.organization.name
+          }
+        })
+        setOrganizations(Object.entries(orgMap).map(([id, name]) => ({ id: Number(id), name })))
+      } catch (error) {
+        console.error("Failed to fetch events for organizations:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
     fetchCategories()
+    fetchEventsAndOrganizations()
     fetchBanners()
   }, [])
 
@@ -108,7 +132,7 @@ export default function EventsPage() {
       <main className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-6 mb-8">
           <div className="w-full md:w-2/3">
-            <p className="text-gray-600">Discover and book the best events</p>
+            <p className="text-gray-600">Discover and book the best events in Iraq</p>
           </div>
           <div className="w-full md:w-1/3 relative">
             <form onSubmit={handleSearch}>
@@ -181,24 +205,6 @@ export default function EventsPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm text-gray-600 block mb-1">Category</label>
-                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All categories" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All categories</SelectItem>
-                      {!isLoading &&
-                        categories.map((category) => (
-                          <SelectItem key={category.id} value={category.slug || String(category.id)}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
                   <label className="text-sm text-gray-600 block mb-1">Price Range</label>
                   <div className="grid grid-cols-2 gap-2">
                     <Input
@@ -227,8 +233,8 @@ export default function EventsPage() {
               <p className="text-sm text-gray-600 mb-3">
                 Contact our customer support team for assistance with bookings.
               </p>
-              <Button variant="outline" className="w-full border-purple-700 text-purple-700 hover:bg-purple-50">
-                Contact Support
+              <Button variant="outline" className="w-full border-purple-700 text-purple-700 hover:bg-purple-50" asChild>
+                <a href="https://wa.me/9647827576300" target="_blank" rel="noopener noreferrer">Contact Support</a>
               </Button>
             </div>
           </div>
@@ -253,16 +259,19 @@ export default function EventsPage() {
             </div>
 
             <EventsList
-              categoryId={activeCategory !== "all" ? activeCategory : undefined}
               searchQuery={searchQuery}
               filters={filters}
+              hasMoreEvents={events.length > 9}
+              organizationId={categoryFilter && categoryFilter !== "all" ? Number(categoryFilter) : undefined}
             />
 
-            <div className="mt-8 flex justify-center">
-              <Button variant="outline" className="mx-auto">
-                Load More Events
-              </Button>
-            </div>
+            {hasMoreEvents && (
+              <div className="mt-8 flex justify-center">
+                <Button variant="outline" className="mx-auto">
+                  Load More Events
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </main>
@@ -284,7 +293,13 @@ export default function EventsPage() {
                     />
                   </svg>
                 </a>
-                <a href="#" className="text-gray-600 hover:text-purple-700">
+                <a href="https://www.instagram.com/tathakerlab/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-purple-700" onClick={(e) => {
+                  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                  if (isMobile) {
+                    e.preventDefault();
+                    window.location.href = 'instagram://user?username=tathakerlab';
+                  }
+                }}>
                   <span className="sr-only">Instagram</span>
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path

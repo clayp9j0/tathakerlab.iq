@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           title: "Login successful",
           description: `Welcome back, ${userData.name}!`,
         })
-        router.push("/my-tickets")
+        router.push("/")
       } else {
         console.error("Invalid user data structure:", userData)
         throw new Error("Invalid user data received from API")

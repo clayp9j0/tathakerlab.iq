@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/lib/auth"
+import { useAuth } from "@/components/auth-context"
 import { PurchasedTicket } from "@/lib/types"
 import { PurchasedTicketCard } from "@/components/tickets/PurchasedTicketCard"
 import { Button } from "@/components/ui/button"

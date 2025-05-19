@@ -23,18 +23,19 @@ interface Transaction {
 
 export default function WalletPage() {
   const [balance, setBalance] = useState<number | null>(null)
-  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [depositAmount, setDepositAmount] = useState("")
   const [isDepositing, setIsDepositing] = useState(false)
 
   const router = useRouter()
-  const { user, updateUser } = useAuth()
+  const { user, updateUser, isLoading: isAuthLoading } = useAuth ? useAuth() : { user: null, updateUser: null, isLoading: false }
   const { toast } = useToast()
 
   useEffect(() => {
-    // Redirect if not logged in
+    console.log('[WalletPage] useEffect fired. isAuthLoading:', isAuthLoading, 'user:', user)
+    if (isAuthLoading) return; // Wait for auth to finish loading
     if (!user) {
+      console.log('[WalletPage] No user detected, redirecting to /')
       router.push("/")
       return
     }
@@ -42,33 +43,32 @@ export default function WalletPage() {
     const fetchWalletData = async () => {
       try {
         setIsLoading(true)
-
+        console.log('[WalletPage] Fetching wallet balance for user:', user)
         // Always fetch from API to get the latest balance
         const walletBalance = await getWalletBalance(user.token || "")
         setBalance(walletBalance)
-        
+        console.log('[WalletPage] Wallet balance fetched:', walletBalance)
         // Update user context with new balance
         if (updateUser) {
           updateUser({ ...user, wallet_balance: walletBalance })
         }
-
-        // Fetch transactions
-        const walletTransactions = await getWalletTransactions(user.token || "")
-        setTransactions(walletTransactions)
       } catch (error) {
-        console.error("Failed to fetch wallet data:", error)
+        console.error("[WalletPage] Failed to fetch wallet data:", error)
         toast({
           title: "Error",
           description: "Failed to load wallet data. Please try again.",
           variant: "destructive",
         })
+        // Set default values on error
+        setBalance(0)
       } finally {
         setIsLoading(false)
+        console.log('[WalletPage] setIsLoading(false) called')
       }
     }
 
     fetchWalletData()
-  }, [user, router, toast, updateUser])
+  }, [user, isAuthLoading, router, toast, updateUser])
 
   const handleDeposit = async () => {
     if (!user || !user.id) {
@@ -105,18 +105,6 @@ export default function WalletPage() {
           updateUser({ ...user, wallet_balance: newBalance })
         }
 
-        // Add transaction to list
-        setTransactions((prev) => [
-          {
-            id: Date.now(),
-            type: "deposit",
-            amount: amount,
-            date: new Date().toISOString(),
-            description: "Wallet deposit",
-          },
-          ...prev,
-        ])
-
         // Clear input
         setDepositAmount("")
 
@@ -137,18 +125,6 @@ export default function WalletPage() {
     } finally {
       setIsDepositing(false)
     }
-  }
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
   }
 
   // Format amount with commas
@@ -236,149 +212,6 @@ export default function WalletPage() {
               </CardContent>
             </Card>
           </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Transaction History</CardTitle>
-              <CardDescription>View your recent wallet activity</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="all">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="all">All Transactions</TabsTrigger>
-                  <TabsTrigger value="deposits">Deposits</TabsTrigger>
-                  <TabsTrigger value="purchases">Purchases</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="all">
-                  {transactions.length > 0 ? (
-                    <div className="space-y-4">
-                      {transactions.map((transaction) => (
-                        <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg">
-                          <div className="flex items-center">
-                            <div
-                              className={`p-2 rounded-full mr-4 ${
-                                transaction.type === "deposit"
-                                  ? "bg-green-100"
-                                  : transaction.type === "refund"
-                                    ? "bg-blue-100"
-                                    : "bg-red-100"
-                              }`}
-                            >
-                              {transaction.type === "deposit" ? (
-                                <ArrowUpRight
-                                  className={`h-5 w-5 ${
-                                    transaction.type === "deposit"
-                                      ? "text-green-600"
-                                      : transaction.type === "refund"
-                                        ? "text-blue-600"
-                                        : "text-red-600"
-                                  }`}
-                                />
-                              ) : transaction.type === "refund" ? (
-                                <ArrowUpRight className="h-5 w-5 text-blue-600" />
-                              ) : (
-                                <ArrowDownLeft className="h-5 w-5 text-red-600" />
-                              )}
-                            </div>
-                            <div>
-                              <p className="font-medium">
-                                {transaction.type === "deposit"
-                                  ? "Deposit"
-                                  : transaction.type === "refund"
-                                    ? "Refund"
-                                    : "Purchase"}
-                              </p>
-                              <p className="text-sm text-gray-500">{formatDate(transaction.date)}</p>
-                              <p className="text-sm text-gray-500">{transaction.description}</p>
-                            </div>
-                          </div>
-                          <p
-                            className={`font-bold ${
-                              transaction.type === "deposit" || transaction.type === "refund"
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {transaction.type === "deposit" || transaction.type === "refund" ? "+" : "-"}
-                            {formatAmount(Math.abs(transaction.amount))}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-gray-500">No transactions found</p>
-                    </div>
-                  )}
-                </TabsContent>
-
-                <TabsContent value="deposits">
-                  {transactions.filter((t) => t.type === "deposit" || t.type === "refund").length > 0 ? (
-                    <div className="space-y-4">
-                      {transactions
-                        .filter((t) => t.type === "deposit" || t.type === "refund")
-                        .map((transaction) => (
-                          <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg">
-                            <div className="flex items-center">
-                              <div
-                                className={`p-2 rounded-full mr-4 ${
-                                  transaction.type === "deposit" ? "bg-green-100" : "bg-blue-100"
-                                }`}
-                              >
-                                <ArrowUpRight
-                                  className={`h-5 w-5 ${
-                                    transaction.type === "deposit" ? "text-green-600" : "text-blue-600"
-                                  }`}
-                                />
-                              </div>
-                              <div>
-                                <p className="font-medium">{transaction.type === "deposit" ? "Deposit" : "Refund"}</p>
-                                <p className="text-sm text-gray-500">{formatDate(transaction.date)}</p>
-                                <p className="text-sm text-gray-500">{transaction.description}</p>
-                              </div>
-                            </div>
-                            <p className="font-bold text-green-600">+{formatAmount(transaction.amount)}</p>
-                          </div>
-                        ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-gray-500">No deposits found</p>
-                    </div>
-                  )}
-                </TabsContent>
-
-                <TabsContent value="purchases">
-                  {transactions.filter((t) => t.type === "purchase").length > 0 ? (
-                    <div className="space-y-4">
-                      {transactions
-                        .filter((t) => t.type === "purchase")
-                        .map((transaction) => (
-                          <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg">
-                            <div className="flex items-center">
-                              <div className="p-2 bg-red-100 rounded-full mr-4">
-                                <ArrowDownLeft className="h-5 w-5 text-red-600" />
-                              </div>
-                              <div>
-                                <p className="font-medium">Purchase</p>
-                                <p className="text-sm text-gray-500">{formatDate(transaction.date)}</p>
-                                <p className="text-sm text-gray-500">{transaction.description}</p>
-                              </div>
-                            </div>
-                            <p className="font-bold text-red-600">-{formatAmount(Math.abs(transaction.amount))}</p>
-                          </div>
-                        ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-gray-500">No purchases found</p>
-                    </div>
-                  )}
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
         </div>
       </main>
 

@@ -20,15 +20,14 @@ export interface Event {
   id: number
   title: string
   date: string
-  time: string
-  venue: string
+  end_date?: string
+  venue: string | { name: string }
   location: string
-  category: string
-  image: string
   price: string
-  featured: boolean
-  description: string
-  ticket_categories: TicketCategory[]
+  image: string
+  category: string | { id: number; name: string }
+  featured?: boolean
+  organization?: { id: number; name: string; instagram?: string | null; logo?: string }
 }
 
 export interface TicketCategory {
@@ -360,28 +359,39 @@ export async function logout(token: string): Promise<void> {
 const mockEvents: Event[] = [
   {
     id: 1,
+    title: "Summer Music Festival",
+    date: "2024-07-15",
+    end_date: "2024-07-17",
+    venue: "Central Park",
+    location: "New York, NY",
+    price: "150",
+    image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&auto=format&fit=crop&q=60",
+    category: "Concerts",
+    featured: true
+  },
+  {
+    id: 2,
     title: "Tech Conference 2024",
-    date: "2024-03-15",
-    time: "09:00",
+    date: "2024-08-20",
+    end_date: "2024-08-22",
     venue: "Convention Center",
-    location: "New York",
-    category: "Technology",
-    image: "/images/events/tech-conference.jpg",
-    price: "299.99",
-    featured: true,
-    description: "Join us for the biggest tech conference of the year",
-    ticket_categories: [
-      {
-        id: 1,
-        name: "Early Bird",
-        price: "299.99",
-        is_free: 0,
-        details: "Access to all sessions",
-        sale_start_date: "2024-01-01",
-        sale_end_date: "2024-02-01",
-        quantity_available: 100
-      }
-    ]
+    location: "San Francisco, CA",
+    price: "300",
+    image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&auto=format&fit=crop&q=60",
+    category: "Conference",
+    featured: false
+  },
+  {
+    id: 3,
+    title: "Food & Wine Festival",
+    date: "2024-09-10",
+    end_date: "2024-09-12",
+    venue: "Downtown Square",
+    location: "Chicago, IL",
+    price: "75",
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&auto=format&fit=crop&q=60",
+    category: "Food & Drink",
+    featured: true
   }
 ];
 
@@ -402,26 +412,13 @@ function normalizeEvent(event: any): Event {
     id: event.id,
     title: event.event_name || event.title || "Untitled Event",
     date: event.start_date || event.date || "TBD",
-    time: event.time || "TBD",
+    end_date: event.end_date || undefined,
     venue: event.venue?.name || (typeof event.venue === "string" ? event.venue : "TBD"),
     location: event.venue?.city || event.location || "TBD",
     category: event.category?.name || event.category || "Event",
     image: event.cover || event.image || "/images/placeholder.jpg",
     price: minPrice,
-    featured: !!event.featured,
-    description: event.description || "",
-    ticket_categories: Array.isArray(event.ticket_categories)
-      ? event.ticket_categories.map((cat: any) => ({
-          id: typeof cat.id === "number" ? cat.id : 0,
-          name: typeof cat.name === "string" ? cat.name : "Standard",
-          price: typeof cat.price === "string" ? cat.price : cat.is_free ? "0" : "0",
-          is_free: typeof cat.is_free === "number" ? cat.is_free : 0,
-          details: typeof cat.details === "string" ? cat.details : null,
-          sale_start_date: typeof cat.sale_start_date === "string" ? cat.sale_start_date : new Date().toISOString(),
-          sale_end_date: typeof cat.sale_end_date === "string" ? cat.sale_end_date : new Date().toISOString(),
-          quantity_available: typeof cat.quantity_available === "number" ? cat.quantity_available : 0
-        }))
-      : []
+    featured: !!event.featured
   };
 }
 
@@ -670,28 +667,18 @@ export async function createOrder(order: Order, token: string): Promise<any> {
 export async function getWalletBalance(token: string): Promise<number> {
   try {
     console.log("Fetching wallet balance...")
-    const response = await fetch(`${API_BASE_URL}/api/wallet`, {
+    const response = await fetch(`${API_BASE_URL}/api/wallet/me`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      mode: "cors",
-      cache: "no-cache",
     })
 
     if (!response.ok) {
       console.error(`API returned status: ${response.status}`)
       throw new Error(`API error: ${response.status}`)
-    }
-
-    // Check if the response is JSON
-    const contentType = response.headers.get("content-type")
-    if (!contentType || !contentType.includes("application/json")) {
-      const responseText = await response.text()
-      console.error("Expected JSON but got:", responseText)
-      throw new Error("Server returned non-JSON response")
     }
 
     const data = await response.json()
@@ -702,7 +689,7 @@ export async function getWalletBalance(token: string): Promise<number> {
     if (typeof data === 'number') {
       balance = data
     } else if (typeof data === 'object' && data !== null) {
-      balance = data.balance || data.wallet_balance || 0
+      balance = data.balance || data.wallet_balance || data.data?.wallet_balance || 0
     }
 
     console.log("Processed wallet balance:", balance)
@@ -714,104 +701,62 @@ export async function getWalletBalance(token: string): Promise<number> {
 }
 
 export async function depositToWallet(userId: string, amount: number, token: string): Promise<any> {
-  // If we're using mock data, return a mock deposit confirmation
-  if (useMockData) {
-    console.log("Using mock wallet deposit")
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    return {
-      success: true,
-      transaction_id: `MOCK-${Date.now()}`,
-      amount: amount,
-      message: "Deposit successful",
-    }
-  }
-
   try {
-    const formData = new FormData()
-    formData.append("user_id", userId)
-    formData.append("amount", amount.toString())
-
     const response = await fetch(`${API_BASE_URL}/api/wallet/deposit`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        Accept: "application/json",
       },
-      body: formData,
-      mode: "cors",
-      cache: "no-cache",
+      body: JSON.stringify({
+        user_id: userId,
+        amount: amount
+      }),
     })
 
     if (!response.ok) {
-      // Check if the response is JSON
-      const contentType = response.headers.get("content-type")
-      if (contentType && contentType.includes("application/json")) {
-        const error = await response.json()
-        throw new Error(error.message || "Failed to deposit to wallet")
-      } else {
-        // If not JSON, get the text and throw that as an error
-        const errorText = await response.text()
-        console.error("Non-JSON error response:", errorText)
-        throw new Error(`Failed to deposit to wallet: Server returned ${response.status}`)
-      }
-    }
-
-    // Check if the response is JSON
-    const contentType = response.headers.get("content-type")
-    if (!contentType || !contentType.includes("application/json")) {
-      const responseText = await response.text()
-      console.error("Expected JSON but got:", responseText)
-      throw new Error("Server returned non-JSON response")
+      const error = await response.json()
+      throw new Error(error.message || "Failed to deposit to wallet")
     }
 
     return response.json()
   } catch (error) {
     console.error("Error depositing to wallet:", error)
-    useMockData = true
-
-    // Fall back to mock data
-    return depositToWallet(userId, amount, token)
+    throw error
   }
 }
 
 export async function getWalletTransactions(token: string): Promise<any[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/wallet/transactions`, {
+    const response = await fetch(`${API_BASE_URL}/api/wallet/me/transactions`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      mode: "cors",
-      cache: "no-cache",
     })
 
     if (!response.ok) {
       if (response.status === 404) {
-        // If no transactions found, return empty array
-        console.log("No transactions found for user")
         return []
       }
-      console.error(`API returned status: ${response.status}`)
       throw new Error(`API error: ${response.status}`)
-    }
-
-    // Check if the response is JSON
-    const contentType = response.headers.get("content-type")
-    if (!contentType || !contentType.includes("application/json")) {
-      const responseText = await response.text()
-      console.error("Expected JSON but got:", responseText)
-      throw new Error("Server returned non-JSON response")
     }
 
     const data = await response.json()
     console.log("Wallet transactions received:", data)
-    return Array.isArray(data) ? data : []
+    
+    // Handle different response formats
+    if (Array.isArray(data)) {
+      return data
+    } else if (data && data.data && Array.isArray(data.data)) {
+      return data.data
+    }
+    return []
   } catch (error) {
     console.error("Error fetching wallet transactions:", error)
-    // Return empty array instead of throwing error
     return []
   }
 }
@@ -965,49 +910,14 @@ export async function fetchSwaggerDocs(): Promise<any> {
 export const sampleEvent: Event = {
   id: 1,
   title: "Justin Timberlake: The Forget Tomorrow World Tour",
-  description:
-    "Experience the electrifying performance of Justin Timberlake live in Dubai as part of his Forget Tomorrow World Tour. This highly anticipated concert will feature his greatest hits and new material in an unforgettable show.",
   date: "May 21, 2024",
-  time: "8:00 PM",
   venue: "Coca-Cola Arena",
-  location: "City Walk, Dubai",
+  location: "City Walk, Iraq",
   category: "Concerts",
   image: "/placeholder.svg?height=600&width=1200",
   price: "299,000",
-  featured: true,
-  ticket_categories: [
-    {
-      id: 5,
-      name: "General Admission",
-      price: "299,000",
-      is_free: 0,
-      details: "General admission standing area",
-      sale_start_date: "2024-01-01",
-      sale_end_date: "2025-01-01",
-      quantity_available: 150
-    },
-    {
-      id: 6,
-      name: "VIP Package",
-      price: "599,000",
-      is_free: 0,
-      details: "VIP access with exclusive areas",
-      sale_start_date: "2024-01-01",
-      sale_end_date: "2025-01-01",
-      quantity_available: 50
-    },
-    {
-      id: 7,
-      name: "Premium Experience",
-      price: "999,000",
-      is_free: 0,
-      details: "Premium access with exclusive areas",
-      sale_start_date: "2024-01-01",
-      sale_end_date: "2025-01-01",
-      quantity_available: 20
-    },
-  ],
-}
+  featured: true
+};
 
 // Initialize by checking API availability
 checkApiAvailability().then((available) => {

@@ -406,7 +406,7 @@ export default function EventPage() {
                         ? event.venue
                         : "TBD"}{" "}
                     is located in {typeof event.location === "string" ? event.location : "TBD"}. It's one of the premier
-                    venues in Dubai, known for its excellent facilities and atmosphere.
+                    venues in Iraq, known for its excellent facilities and atmosphere.
                   </p>
                   <h3 className="text-lg font-semibold mt-6 mb-2">Getting There</h3>
                   <p className="mb-4">

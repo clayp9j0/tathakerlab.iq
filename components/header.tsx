@@ -44,7 +44,7 @@ export default function Header() {
           <Link href="/" className="text-xl font-bold text-purple-700">
             Tathaker Lab
           </Link>
-          <span className="text-sm text-gray-500">Dubai</span>
+          <span className="text-sm text-gray-500">Iraq</span>
         </div>
 
         {/* Desktop Navigation */}
