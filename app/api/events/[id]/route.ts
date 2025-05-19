@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, context: { params: { id: string } }) {
   try {
-    const response = await fetch(`https://blue-penguin-872241.hostingersite.com/api/events/${params.id}`);
+    const { id } = context.params;
+    const response = await fetch(`https://blue-penguin-872241.hostingersite.com/api/events/${id}`);
     if (!response.ok) {
       throw new Error('Failed to fetch event details');
     }

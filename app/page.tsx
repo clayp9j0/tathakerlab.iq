@@ -108,8 +108,7 @@ export default function EventsPage() {
       <main className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-6 mb-8">
           <div className="w-full md:w-2/3">
-            <h1 className="text-3xl font-bold mb-2">Dubai Events</h1>
-            <p className="text-gray-600">Discover and book the best events in Dubai</p>
+            <p className="text-gray-600">Discover and book the best events</p>
           </div>
           <div className="w-full md:w-1/3 relative">
             <form onSubmit={handleSearch}>
@@ -272,8 +271,8 @@ export default function EventsPage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="font-bold text-lg mb-4">PlatinumList</h3>
-              <p className="text-sm text-gray-600 mb-4">Your premier destination for events in Dubai and beyond.</p>
+              <h3 className="font-bold text-lg mb-4">Tathaker Lab</h3>
+              <p className="text-sm text-gray-600 mb-4">Your premier destination for events in Iraq and beyond.</p>
               <div className="flex gap-4">
                 <a href="#" className="text-gray-600 hover:text-purple-700">
                   <span className="sr-only">Facebook</span>
@@ -348,7 +347,7 @@ export default function EventsPage() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-gray-200">
-            <p className="text-sm text-gray-600 text-center">© 2024 PlatinumList. All rights reserved.</p>
+            <p className="text-sm text-gray-600 text-center">© 2024 Tathaker Lab. All rights reserved.</p>
           </div>
         </div>
       </footer>

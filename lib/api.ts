@@ -387,23 +387,34 @@ const mockEvents: Event[] = [
 
 // Update event normalization function
 function normalizeEvent(event: any): Event {
+  // Get minimum price (handle free tickets)
+  let minPrice = "TBD";
+  if (Array.isArray(event.ticket_categories) && event.ticket_categories.length > 0) {
+    const prices = event.ticket_categories
+      .map((cat: any) => cat.is_free ? 0 : Number(cat.price))
+      .filter((p: number) => !isNaN(p));
+    if (prices.length > 0) {
+      minPrice = Math.min(...prices).toLocaleString();
+    }
+  }
+
   return {
-    id: typeof event.id === "number" ? event.id : 0,
-    title: typeof event.title === "string" ? event.title : "Untitled Event",
-    date: typeof event.date === "string" ? event.date : "TBD",
-    time: typeof event.time === "string" ? event.time : "TBD",
-    venue: typeof event.venue === "string" ? event.venue : "TBD",
-    location: typeof event.location === "string" ? event.location : "TBD",
-    category: typeof event.category === "string" ? event.category : "Event",
-    image: typeof event.image === "string" ? event.image : "/images/placeholder.jpg",
-    price: typeof event.price === "string" ? event.price : "0",
+    id: event.id,
+    title: event.event_name || event.title || "Untitled Event",
+    date: event.start_date || event.date || "TBD",
+    time: event.time || "TBD",
+    venue: event.venue?.name || (typeof event.venue === "string" ? event.venue : "TBD"),
+    location: event.venue?.city || event.location || "TBD",
+    category: event.category?.name || event.category || "Event",
+    image: event.cover || event.image || "/images/placeholder.jpg",
+    price: minPrice,
     featured: !!event.featured,
-    description: typeof event.description === "string" ? event.description : "",
+    description: event.description || "",
     ticket_categories: Array.isArray(event.ticket_categories)
       ? event.ticket_categories.map((cat: any) => ({
           id: typeof cat.id === "number" ? cat.id : 0,
           name: typeof cat.name === "string" ? cat.name : "Standard",
-          price: typeof cat.price === "string" ? cat.price : "0",
+          price: typeof cat.price === "string" ? cat.price : cat.is_free ? "0" : "0",
           is_free: typeof cat.is_free === "number" ? cat.is_free : 0,
           details: typeof cat.details === "string" ? cat.details : null,
           sale_start_date: typeof cat.sale_start_date === "string" ? cat.sale_start_date : new Date().toISOString(),
@@ -569,48 +580,11 @@ export async function getEventsByCategory(categoryId: number): Promise<Event[]> 
     }
 
     const data = await response.json()
-
-    // Validate and normalize each event object
-    const validatedEvents = data.map((event: any) => {
-      // Format the price to include commas for thousands
-      let formattedPrice = event.price
-      if (typeof event.price === "number") {
-        formattedPrice = event.price.toLocaleString()
-      } else if (typeof event.price === "string" && !isNaN(Number(event.price))) {
-        formattedPrice = Number(event.price).toLocaleString()
-      }
-
-      // Ensure all required fields exist
-      const normalizedEventName = typeof event.event_name === "string" ? event.event_name : (typeof event.title === "string" ? event.title : "Untitled Event")
-      return {
-        id: typeof event.id === "number" ? event.id : 0,
-        title: normalizedEventName,
-        event_name: normalizedEventName,
-        description: typeof event.description === "string" ? event.description : "",
-        image: event.image || null,
-        cover: event.cover || null,
-        date: typeof event.date === "string" ? event.date : "TBD",
-        start_date: typeof event.start_date === "string" ? event.start_date : undefined,
-        time: typeof event.time === "string" ? event.time : "TBD",
-        venue: event.venue || "TBD",
-        location: typeof event.location === "string" ? event.location : "TBD",
-        category: event.category || "Event",
-        price: formattedPrice,
-        featured: !!event.featured,
-        ticket_categories: Array.isArray(event.ticket_categories)
-          ? event.ticket_categories.map((cat: any) => ({
-              ...cat,
-              price: typeof cat.price === "number" ? cat.price : Number(cat.price || 0),
-            }))
-          : [],
-      }
-    })
-
-    return validatedEvents
+    // Use the same normalization as getActiveEvents
+    return data.map(normalizeEvent)
   } catch (error) {
     console.error("Error fetching events by category:", error)
     useMockData = true
-
     // Fall back to mock data
     return getEventsByCategory(categoryId)
   }

@@ -42,7 +42,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/" className="text-xl font-bold text-purple-700">
-            PlatinumList
+            Tathaker Lab
           </Link>
           <span className="text-sm text-gray-500">Dubai</span>
         </div>

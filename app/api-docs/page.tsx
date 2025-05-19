@@ -46,7 +46,7 @@ export default function ApiDocsPage() {
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">API Documentation</h1>
         <p className="text-gray-600 mb-8">
-          Explore the available API endpoints and models for the Dubai Events platform.
+          E
         </p>
 
         <SwaggerExplorer />
@@ -54,7 +54,7 @@ export default function ApiDocsPage() {
 
       <footer className="bg-gray-100 border-t py-8 mt-12">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-sm text-gray-600">© 2024 PlatinumList. All rights reserved.</p>
+          <p className="text-sm text-gray-600">© 2024 Tathaker Lab. All rights reserved.</p>
         </div>
       </footer>
     </div>

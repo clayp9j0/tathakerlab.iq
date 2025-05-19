@@ -587,7 +587,7 @@ export default function EventPage() {
 
       <footer className="bg-gray-100 border-t py-8 mt-12">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-sm text-gray-600">© 2024 PlatinumList. All rights reserved.</p>
+          <p className="text-sm text-gray-600">© 2024 Tathaker Lab. All rights reserved.</p>
         </div>
       </footer>
     </div>
