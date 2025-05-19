@@ -151,6 +151,7 @@ export async function checkApiAvailability(): Promise<boolean> {
 // Authentication
 export async function login(identifier: string, password: string): Promise<User> {
   try {
+    console.log('Starting login process...');
     const response = await fetch(`${API_BASE_URL}/api/login`, {
       method: "POST",
       headers: {
@@ -158,40 +159,67 @@ export async function login(identifier: string, password: string): Promise<User>
         'Accept': 'application/json',
       },
       body: JSON.stringify({
-        phone: identifier,
+        identifier: identifier,
         password: password,
       }),
-    })
+    });
+
+    console.log('Login response status:', response.status);
 
     if (!response.ok) {
-      const contentType = response.headers.get("content-type")
+      const contentType = response.headers.get("content-type");
       if (contentType && contentType.includes("application/json")) {
-        const error = await response.json()
-        throw new Error(error.message || "Failed to login")
+        const error = await response.json();
+        throw new Error(error.message || "Failed to login");
       } else {
-        const errorText = await response.text()
-        console.error("Non-JSON error response:", errorText)
-        throw new Error(`Failed to login: Server returned ${response.status}`)
+        const errorText = await response.text();
+        console.error("Non-JSON error response:", errorText);
+        throw new Error(`Failed to login: Server returned ${response.status}`);
       }
     }
 
-    const contentType = response.headers.get("content-type")
+    const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      const responseText = await response.text()
-      console.error("Expected JSON but got:", responseText)
-      throw new Error("Server returned non-JSON response")
+      const responseText = await response.text();
+      console.error("Expected JSON but got:", responseText);
+      throw new Error("Server returned non-JSON response");
     }
 
-    const userData = await response.json()
-    console.log("Login response:", userData)
+    const responseData = await response.json();
+    console.log("Login response data:", responseData);
 
-    if (userData && !userData.wallet_balance) {
-      userData.wallet_balance = 250000
+    // Handle the specific API response format
+    if (!responseData.token || !responseData.user) {
+      console.error("Invalid API response format:", responseData);
+      throw new Error("Invalid API response format");
     }
-    return userData
+
+    const userData: User = {
+      id: responseData.user.id,
+      name: responseData.user.name,
+      phone: responseData.user.phone,
+      token: responseData.token,
+      wallet_balance: 0 // Will be fetched separately
+    };
+
+    console.log("Processed user data:", userData);
+
+    // Validate the user data
+    if (!userData.id || !userData.name || !userData.phone || !userData.token) {
+      console.error("Invalid user data structure:", {
+        id: userData.id,
+        name: userData.name,
+        phone: userData.phone,
+        token: userData.token,
+        rawResponse: responseData
+      });
+      throw new Error("Invalid user data received from server");
+    }
+
+    return userData;
   } catch (error) {
-    console.error("Login error:", error)
-    throw error // Throw the error instead of falling back to mock data
+    console.error("Login error:", error);
+    throw error;
   }
 }
 
