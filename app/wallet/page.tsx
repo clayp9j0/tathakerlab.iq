@@ -32,6 +32,8 @@ export default function WalletPage() {
   const { toast } = useToast()
 
   useEffect(() => {
+    console.log('[WalletPage] useEffect Dependencies:', { user, isAuthLoading, router, toast, updateUser });
+    console.log('[WalletPage] useEffect - Start', { isAuthLoading, user });
     console.log('[WalletPage] useEffect fired. isAuthLoading:', isAuthLoading, 'user:', user)
     if (isAuthLoading) return; // Wait for auth to finish loading
     if (!user) {
@@ -41,6 +43,7 @@ export default function WalletPage() {
     }
 
     const fetchWalletData = async () => {
+      console.log('[WalletPage] fetchWalletData - Called', { isAuthLoading, user });
       try {
         setIsLoading(true)
         console.log('[WalletPage] Fetching wallet balance for user:', user)
@@ -68,7 +71,7 @@ export default function WalletPage() {
     }
 
     fetchWalletData()
-  }, [user, isAuthLoading, router, toast, updateUser])
+  }, [isAuthLoading, router, toast, updateUser])
 
   const handleDeposit = async () => {
     if (!user || !user.id) {
@@ -129,7 +132,10 @@ export default function WalletPage() {
 
   // Format amount with commas
   const formatAmount = (amount: number): string => {
-    return amount.toLocaleString()
+    // Convert number to string and add commas
+    const parts = amount.toString().split('.')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return parts.join('.') + ' IQD'
   }
 
   if (isLoading) {
@@ -165,7 +171,7 @@ export default function WalletPage() {
               <CardContent>
                 <div className="flex items-center">
                   <Wallet className="h-8 w-8 mr-3 text-purple-700" />
-                  <span className="text-3xl font-bold">{balance !== null ? formatAmount(balance) : "0"}</span>
+                  <span className="text-3xl font-bold">{balance !== null ? formatAmount(balance) : "0"} IQD</span>
                 </div>
               </CardContent>
             </Card>

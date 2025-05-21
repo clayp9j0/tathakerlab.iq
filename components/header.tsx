@@ -33,8 +33,15 @@ export default function Header() {
 
   // Format wallet balance with commas
   const formatBalance = (balance: number | undefined): string => {
-    if (balance === undefined) return "0"
-    return balance.toLocaleString()
+    if (balance === undefined) return "0 IQD"
+    // Custom formatting to add commas every three digits from the right
+    const parts = String(balance).split('.');
+    const integerPart = parts[0];
+    const decimalPart = parts[1];
+    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    
+    const formattedBalance = decimalPart !== undefined ? `${formattedInteger}.${decimalPart}` : formattedInteger;
+    return `${formattedBalance} IQD`
   }
 
   return (
@@ -57,8 +64,7 @@ export default function Header() {
             <>
               <Link href="/wallet" className="text-sm font-medium hover:text-purple-700 flex items-center">
                 <Wallet className="h-4 w-4 mr-1" />
-                Wallet ({formatBalance(user.wallet_balance)})
-              </Link>
+                Wallet ({formatBalance(user.wallet_balance)})</Link>
               <Link href="/my-tickets" className="text-sm font-medium hover:text-purple-700 flex items-center">
                 My Tickets
               </Link>
@@ -81,8 +87,7 @@ export default function Header() {
                 <DropdownMenuItem asChild>
                   <Link href="/wallet">
                     <Wallet className="h-4 w-4 mr-2" />
-                    Wallet ({formatBalance(user.wallet_balance)})
-                  </Link>
+                    Wallet ({formatBalance(user.wallet_balance)})</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/my-tickets">My Tickets</Link>
@@ -140,8 +145,7 @@ export default function Header() {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Wallet className="h-4 w-4 mr-1" />
-                  Wallet ({formatBalance(user.wallet_balance)})
-                </Link>
+                  Wallet ({formatBalance(user.wallet_balance)})</Link>
                 <Link
                   href="/my-tickets"
                   className="text-sm font-medium hover:text-purple-700"

@@ -158,7 +158,7 @@ export default function EventsList({ categoryId, searchQuery, filters, hasMoreEv
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mx-auto max-w-screen-xl">
       {filteredEvents.map((event) => (
         <Link href={`/events/${event.id}`} key={event.id} className="block">
           <div className="group bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
@@ -200,7 +200,6 @@ export default function EventsList({ categoryId, searchQuery, filters, hasMoreEv
                   <p className="text-sm text-gray-500">Starting from</p>
                   <p className="font-bold text-lg">{event.price} <span className="text-xs text-gray-500">IQD</span></p>
                 </div>
-                <Button className="bg-purple-700 hover:bg-purple-800">Book Now</Button>
               </div>
             </div>
           </div>

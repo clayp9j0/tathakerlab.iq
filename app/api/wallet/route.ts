@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     }
 
     // Forward the request to the backend API
-    const response = await fetch('https://blue-penguin-872241.hostingersite.com/api/user/wallet', {
+    const response = await fetch('https://blue-penguin-872241.hostingersite.com/api/wallet/me', {
       method: 'GET',
       headers: {
         'Authorization': authHeader,

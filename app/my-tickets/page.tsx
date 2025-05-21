@@ -8,6 +8,7 @@ import { PurchasedTicketCard } from "@/components/tickets/PurchasedTicketCard"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import Header from "@/components/header"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://blue-penguin-872241.hostingersite.com"
 
@@ -16,6 +17,7 @@ export default function MyTicketsPage() {
   const { user, isLoading } = useAuth()
   const { toast } = useToast()
   const [tickets, setTickets] = useState<PurchasedTicket[]>([])
+  const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'used' | 'cancelled'>('all');
   const [isLoadingTickets, setIsLoadingTickets] = useState(true)
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export default function MyTicketsPage() {
         eventImageUrl: "/placeholder-event.jpg",
         eventImageHint: apiTicket.event_name,
         ticketCategoryName: apiTicket.ticket_category?.name || "Standard",
-        ticketHolderName: apiTicket.holder_name,
+ ticketHolderName: apiTicket.holder_name || 'N/A',
         purchaseDate: apiTicket.created_at,
         qrCodeUrl: apiTicket.qr_code_svg,
         is_valid: apiTicket.is_valid,
@@ -90,6 +92,18 @@ export default function MyTicketsPage() {
     }
   }
 
+  const filteredTickets = tickets.filter((ticket) => {
+    if (filterStatus === 'all') {
+ return true;
+    }
+    if (filterStatus === 'available') {
+      return ticket.availability_status === 'available';
+
+    }
+    // Map 'used' and 'cancelled' to their availability status
+    return ticket.availability_status === filterStatus;
+  });
+
   if (isLoading || isLoadingTickets) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -99,27 +113,51 @@ export default function MyTicketsPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">My Tickets</h1>
-        <Button onClick={() => router.push("/")}>Browse Events</Button>
-      </div>
+    <>
+      <Header />
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8 flex items-center justify-between">
+          <h1 className="text-3xl font-bold">My Tickets</h1>
+ <Button onClick={() => router.push("/")}
+ className='bg-[#7D2EEB] text-white hover:bg-[#6b29d6]'
+ >Browse Events</Button>
+        </div>
+        {/* Filter Buttons */}
+        <div className="mb-6 flex space-x-4">
+          <Button
+            className={filterStatus === 'all' ? 'bg-[#7D2EEB] text-white hover:bg-[#6b29d6]' : 'border'}
+            onClick={() => setFilterStatus('all')}
+          >All</Button>
+          <Button
+            variant={filterStatus === 'available' ? 'default' : 'outline'}
+            onClick={() => setFilterStatus('available')}
+          >Ready to Use</Button>
+          <Button
+            variant={filterStatus === 'used' ? 'default' : 'outline'}
+            onClick={() => setFilterStatus('used')}
+          >Used</Button>
+          <Button
+            variant={filterStatus === 'cancelled' ? 'default' : 'outline'}
+            onClick={() => setFilterStatus('cancelled')}>Cancelled</Button>
 
-      {tickets.length === 0 ? (
-        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-          <h3 className="mb-2 text-xl font-semibold">No tickets found</h3>
-          <p className="mb-4 text-muted-foreground">
-            You haven't purchased any tickets yet.
-          </p>
-          <Button onClick={() => router.push("/")}>Browse Events</Button>
-        </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {tickets.map((ticket) => (
-            <PurchasedTicketCard key={ticket.id} ticket={ticket} />
-          ))}
-        </div>
-      )}
-    </div>
+   </div>
+
+        {tickets.length === 0 ? (
+          <div className="flex min-h-[400px] flex-col items-center justify-center rounded-md border border-dashed p-8 text-center">
+   <h3 className="mb-2 text-xl font-semibold">No tickets found</h3>
+            <p className="mb-4 text-muted-foreground">
+              You haven't purchased any tickets yet.
+            </p>
+            <Button onClick={() => router.push("/")}>Browse Events</Button>
+          </div>
+        ) : (
+          <div className="grid gap-1 md:grid-cols-3 lg:grid-cols-3">
+            {filteredTickets.map((ticket) => (
+              <PurchasedTicketCard key={ticket.id} ticket={ticket} />
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   )
 }

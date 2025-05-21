@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
 import { type User, login as apiLogin, register as apiRegister, logout as apiLogout } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
@@ -30,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast()
 
   useEffect(() => {
+    console.log('[AuthContext] Initializing. Current user:', user, 'isLoading:', isLoading);
     // Check for stored user data on component mount
     const storedUser = localStorage.getItem("user")
     if (storedUser) {
@@ -53,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem("user")
       }
     }
+    console.log('[AuthContext] Initialization complete. User:', user, 'isLoading set to false');
     setIsLoading(false)
   }, [])
 
@@ -92,6 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw error
     } finally {
       setIsLoading(false)
+      console.log('[AuthContext] Login process finished. isLoading set to false. User:', user);
     }
   }
 
@@ -133,6 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw error
     } finally {
       setIsLoading(false)
+      console.log('[AuthContext] Registration process finished. isLoading set to false. User:', user);
     }
   }
 
@@ -159,14 +163,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw error
     } finally {
       setIsLoading(false)
+      console.log('[AuthContext] Logout process finished. isLoading set to false. User:', user);
     }
   }
 
-  const updateUser = (updatedUser: User) => {
-    setUser(updatedUser)
-    localStorage.setItem("user", JSON.stringify(updatedUser))
-  }
+  const updateUser = useCallback((updatedUser: User) => {
+ setUser(updatedUser);
+  }, [setUser]);
 
+ useEffect(() => {
+ if (user) {
+ localStorage.setItem("user", JSON.stringify(user));
+ }
+  }, [user]);
   return <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateUser }}>{children}</AuthContext.Provider>
 }
 
